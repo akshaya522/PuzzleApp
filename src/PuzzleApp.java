@@ -21,10 +21,15 @@ public class PuzzleApp {
                 if (userAction.equals("1")) {
                     createShape();
                 } else {
-                    // generate random
+                    generateRandomShape();
                 }
             }
             } while(!(userAction.equals("1") || userAction.equals("2")));
+    }
+
+    private static void generateRandomShape() {
+        Integer numOfPts = puzzleHelper.getRandomNumber(3, 8);
+        System.out.println("Number of points: " + numOfPts);
     }
 
     private static void createShape() {
@@ -100,7 +105,17 @@ public class PuzzleApp {
                 System.out.println("Not adding new coordinates to the current shape. \n");
                 return false;
             } else {
-                return true;
+                if (points.size() == 2 && !puzzleHelper.validateSamePlane(points, newPt)) {
+                    System.out.println("New coordinates" + puzzleHelper.convertUserInputToCoordStr(userInput) + " is invalid!!!");
+                    System.out.println("Not adding new coordinates to the current shape. \n");
+                    return false;
+                } else if (points.size() > 2 && !puzzleHelper.validateNewPtIsConvex(points, newPt)) {
+                    System.out.println("New coordinates" + puzzleHelper.convertUserInputToCoordStr(userInput) + " is invalid!!!");
+                    System.out.println("Not adding new coordinates to the current shape. \n");
+                    return false;
+                } else {
+                    return true;
+                }
             }
         } else {
             System.out.println("Incorrect format!");
