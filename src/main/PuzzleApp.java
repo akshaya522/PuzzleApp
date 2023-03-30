@@ -1,4 +1,7 @@
+package main;
+
 import java.awt.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,7 +17,7 @@ public class PuzzleApp {
         String userAction;
 
         do {
-            userAction = scanner.nextLine();
+            userAction = scanner.nextLine().trim();
             if (!(userAction.equals("1") || userAction.equals("2"))) {
                 System.out.println("Please enter 1 or 2");
             } else {
@@ -28,8 +31,16 @@ public class PuzzleApp {
     }
 
     private static void generateRandomShape() {
-        Integer numOfPts = puzzleHelper.getRandomNumber(3, 8);
-        System.out.println("Number of points: " + numOfPts);
+        List<Point> randomPolygon = generateRandomConvexShape();
+        System.out.println("Your random shape is");
+        int index = 1;
+        for(Point pt : randomPolygon) {
+            System.out.println(index++ + ":" + puzzleHelper.convertPointToCoordStr(pt));
+        }
+        System.out.println("Please key in test coordinates in x y format or enter # to quit the game");
+
+        String userInput = scanner.nextLine().trim();
+        testPuzzle(randomPolygon, userInput);
     }
 
     private static void createShape() {
@@ -39,8 +50,8 @@ public class PuzzleApp {
         do {
             if (listOfPoints.size() == 0) {
                 System.out.println("Please enter coordinates 1 in x y format");
-                userInput = scanner.nextLine();
-                if (!validatePoint(listOfPoints, userInput)) {
+                userInput = scanner.nextLine().trim();
+                if (!puzzleHelper.validatePoint(listOfPoints, userInput, false)) {
                 } else {
                     listOfPoints.add(puzzleHelper.convertUserInputToPoint(userInput));
                 }
@@ -51,8 +62,8 @@ public class PuzzleApp {
                     System.out.println(index++ + ":" + puzzleHelper.convertPointToCoordStr(pt));
                 }
                 System.out.println("Please enter coordinates " + (listOfPoints.size()+1 + " in x y format"));
-                userInput = scanner.nextLine();
-                if (!validatePoint(listOfPoints, userInput)) {
+                userInput = scanner.nextLine().trim();
+                if (!puzzleHelper.validatePoint(listOfPoints, userInput, false)) {
                 } else {
                     listOfPoints.add(puzzleHelper.convertUserInputToPoint(userInput));
                 }
@@ -63,9 +74,9 @@ public class PuzzleApp {
                     System.out.println(index++ + ":" + puzzleHelper.convertPointToCoordStr(pt));
                 }
                 System.out.println("Please enter # to finalize your shape or enter coordinates " + (listOfPoints.size()+1) + " in x y format");
-                userInput = scanner.nextLine();
+                userInput = scanner.nextLine().trim();
                 if (!userInput.equals("#")) {
-                    if (!validatePoint(listOfPoints, userInput)) {
+                    if (!puzzleHelper.validatePoint(listOfPoints, userInput, false)) {
                     } else {
                         listOfPoints.add(puzzleHelper.convertUserInputToPoint(userInput));
                     }
@@ -75,12 +86,11 @@ public class PuzzleApp {
                     for(Point pt : listOfPoints) {
                         System.out.println(i++ + ":" + puzzleHelper.convertPointToCoordStr(pt));
                     }
-                    System.out.println("\n");
                     System.out.println("Please key in test coordinates in x y format or enter # to quit the game");
 
-                    userInput = scanner.nextLine();
+                    userInput = scanner.nextLine().trim();
                     if (!userInput.equals("#")) {
-                        otherfunction();
+                        testPuzzle(listOfPoints, userInput);
                         break;
                     } else {
                         System.out.println("Thank you for playing GIC geometry puzzle app");
@@ -91,36 +101,40 @@ public class PuzzleApp {
         } while (!userInput.equals("#"));
     }
 
-    private static void otherfunction() {
-        System.out.println("TEST!");
-        String userInput = scanner.nextLine();
+    private static void testPuzzle(List<Point> pts, String userInputPt) {
+        String userInput = userInputPt;
+
+        do {
+            Point newPt = puzzleHelper.convertUserInputToPoint(userInput);
+            Boolean inPolygon = puzzleHelper.isPtInsideConvexPolygon(pts, newPt);
+            System.out.println("Your finalized shape is");
+            int i = 1;
+            for(Point pt : pts) {
+                System.out.println(i++ + ":" + puzzleHelper.convertPointToCoordStr(pt));
+            }
+            String res = inPolygon ? "Coordinates " + puzzleHelper.convertPointToCoordStr(newPt) + " is within your finalized shape" :
+                    "Sorry, coordinates " + puzzleHelper.convertPointToCoordStr(newPt) + " is outside of your finalized shape";
+            System.out.println(res);
+            System.out.println("Please key in test coordinates in x y format or enter # to quit the game");
+            userInput = scanner.nextLine().trim();
+
+            if (userInput.equals("#")) {
+                System.out.println("Thank you for playing GIC geometry puzzle app");
+                System.out.println("Have a nice day! :-) ");
+            }
+        } while (!userInput.equals("#"));
     }
 
+    private static List<Point> generateRandomConvexShape() {
+        List<Point> polygon = new ArrayList<>();
+        Integer numOfPts = puzzleHelper.getRandomNumber(3, 8);
 
-    private static boolean validatePoint(ArrayList<Point> points, String userInput) {
-        if (userInput.matches("^[0-9]+\s[0-9]+$")) {
-            Point newPt = puzzleHelper.convertUserInputToPoint(userInput);
-            if (points.contains(newPt)) {
-                System.out.println("New coordinates" + puzzleHelper.convertUserInputToCoordStr(userInput) + " is invalid!!!");
-                System.out.println("Not adding new coordinates to the current shape. \n");
-                return false;
-            } else {
-                if (points.size() == 2 && !puzzleHelper.validateSamePlane(points, newPt)) {
-                    System.out.println("New coordinates" + puzzleHelper.convertUserInputToCoordStr(userInput) + " is invalid!!!");
-                    System.out.println("Not adding new coordinates to the current shape. \n");
-                    return false;
-                } else if (points.size() > 2 && !puzzleHelper.validateNewPtIsConvex(points, newPt)) {
-                    System.out.println("New coordinates" + puzzleHelper.convertUserInputToCoordStr(userInput) + " is invalid!!!");
-                    System.out.println("Not adding new coordinates to the current shape. \n");
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        } else {
-            System.out.println("Incorrect format!");
-            System.out.println("Not adding new coordinates to current shape. \n");
-            return false;
-        }
+        do {
+           Point newRandomPoint = new Point(puzzleHelper.getRandomNumber(0, 100), puzzleHelper.getRandomNumber(1,100));
+           if (puzzleHelper.validatePoint(polygon, newRandomPoint, true)) {
+                polygon.add(newRandomPoint);
+           }
+        } while (polygon.size() != numOfPts);
+        return polygon;
     }
 }
