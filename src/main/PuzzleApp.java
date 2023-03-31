@@ -23,7 +23,7 @@ public class PuzzleApp {
                 if (userAction.equals("1")) {
                     createPolygon();
                 } else {
-                    generateRandomShape();
+                    generateRandomPolygonAndTest();
                 }
             }
         } while(!(userAction.equals("1") || userAction.equals("2")));
@@ -33,9 +33,9 @@ public class PuzzleApp {
      * This function creates polygon according to user input
      * and continues to puzzle according to user input
      * */
-    private static void createPolygon() {
+    public static void createPolygon() {
         String userInput = "";
-        List<Point> listOfPoints = new ArrayList<Point>();
+        List<Point> listOfPoints = new ArrayList<>();
 
         do {
             /** First point */
@@ -94,7 +94,7 @@ public class PuzzleApp {
                         /** User wishes to exit */
                     } else {
                         System.out.println("Thank you for playing GIC geometry puzzle app");
-                        System.out.println("Have a nice day! :-) ");
+                        System.out.println("Have a nice day!");
                     }
                 }
             }
@@ -105,8 +105,8 @@ public class PuzzleApp {
      * This function generates a random convex polygon with 3-8 vertices
      * and continues to puzzle according to user input
      * */
-    private static void generateRandomShape() {
-        List<Point> randomPolygon = generateRandomConvexShape();
+    public static void generateRandomPolygonAndTest() {
+        List<Point> randomPolygon = generateRandomConvexPolygon();
         System.out.println("Your random shape is");
         int index = 1;
         for(Point pt : randomPolygon) {
@@ -121,7 +121,7 @@ public class PuzzleApp {
     /**
      * This function generates a random convex polygon with 3-8 vertices
      * */
-    private static List<Point> generateRandomConvexShape() {
+    private static List<Point> generateRandomConvexPolygon() {
         List<Point> polygon = new ArrayList<>();
         Integer numOfPts = puzzleUtility.getRandomNumber(3, 8);
 
@@ -158,7 +158,7 @@ public class PuzzleApp {
 
             if (userInput.equals("#")) {
                 System.out.println("Thank you for playing GIC geometry puzzle app");
-                System.out.println("Have a nice day! :-) ");
+                System.out.println("Have a nice day!");
             }
         } while (!userInput.equals("#"));
     }

@@ -49,15 +49,6 @@ public class PuzzleAppUtility {
         return (int) (Math.random() * (max - min)) + min;
     }
 
-    private static Integer crossPdt(List<Point> pts) {
-        Integer x1 = pts.get(1).x - pts.get(0).x;
-        Integer y1 = pts.get(1).y - pts.get(0).y;
-        Integer x2 = pts.get(2).x - pts.get(0).x;
-        Integer y2 = pts.get(2).y - pts.get(0).y;
-
-        return ((x1*y2) - (y1*x2));
-    }
-
     /**
      * This utility function validates if a new point would keep the polygon convex
      * @param pts - existing list of vertices of polygon
@@ -65,7 +56,7 @@ public class PuzzleAppUtility {
      * @return boolean denoting if polygon would remain convex
      * */
     public static boolean validateNewPtIsConvex(List<Point> pts, Point newPt) {
-        // make deep copy
+        /** Make deep copy of points */
         List<Point> tempPts = new ArrayList<>(pts);
         tempPts.add(newPt);
 
@@ -80,7 +71,6 @@ public class PuzzleAppUtility {
             temp.add(tempPts.get((i+2) % numOfEdges));
 
             curr = crossPdt(temp);
-
             if (curr != 0) {
                 if (curr * prev < 0) {
                     return false;
@@ -99,11 +89,6 @@ public class PuzzleAppUtility {
      * @return boolean denoting if testPt is within polygon
      * */
     public static boolean isPtInsideConvexPolygon(List<Point> pts, Point testPt) {
-        if (pts.contains(testPt)) {
-            return true;
-        } else {
-
-        }
         Integer numOfPoints = pts.size();
         String prevSide = null;
 
@@ -144,7 +129,7 @@ public class PuzzleAppUtility {
             return validatePoint(points, newPt, forRandomGen);
         } else {
             System.out.println("Incorrect format!");
-            System.out.println("Not adding new coordinates to current shape. \n");
+            System.out.println("Not adding new coordinates to current shape.\n");
             return false;
         }
     }
@@ -180,7 +165,16 @@ public class PuzzleAppUtility {
 
     public static void printErrorMsg(Point newPt) {
         System.out.println("New coordinates" + convertPointToCoordStr(newPt) + " is invalid!!!");
-        System.out.println("Not adding new coordinates to the current shape. \n");
+        System.out.println("Not adding new coordinates to the current shape.\n");
+    }
+
+    private static Integer crossPdt(List<Point> pts) {
+        Integer x1 = pts.get(1).x - pts.get(0).x;
+        Integer y1 = pts.get(1).y - pts.get(0).y;
+        Integer x2 = pts.get(2).x - pts.get(0).x;
+        Integer y2 = pts.get(2).y - pts.get(0).y;
+
+        return ((x1*y2) - (y1*x2));
     }
 
     private static Integer getCosineSign(Point a, Point b) {
